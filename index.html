@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de vue</title>
+    <script src="vue.js"></script>
+
+    <style>
+        .verde {
+            background-color: green;
+        }
+
+        .azul {
+            background-color: blue;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="app">
+        {{ message }}
+        <button @click="reverseMessage">Reverse Message</button> <br/> {{ reversedMessage }}
+        {{ dividir() }}
+        <button @click="showMessage">Show Message</button>
+        <a :href="site">Google</a> <br/>
+
+        {{ 2 + 2}} <br/>
+        <input type="date" name="teste" id="" :class=" 1==2 ? input : 'azul'">
+        <input type="text" @change="imprimirTexto($event)"> <br/>
+        
+        Texto default {{ defaultText }} <br/>
+        <a @click.prevent.once="comportamentoDefault()" href="http://google.com.br" target="_blank" rel="noopener noreferrer">TESTE</a>
+
+        <br><form action="" @submit.prevent>
+            <button type="submit">enviar form com prevent</button>
+        </form>
+
+        <input type="text" id="inputIdSelect" value=""><br/>
+        <button type="button" @click="selectInput()">console input</button><br/>
+
+        <span v-if="imprimirSpan">text de impressao de span</span> <br/>
+        
+        <span v-if="nota >=7">aprovado</span>
+        <span v-else-if="nota <=6">reprovado</span>
+        <span v-else>nota invalida</span>
+        <br/>
+
+        <span v-show="mostraTextoSpanComVshow"> texto atraves vshow</span>
+        <br><br>
+
+        <div v-html="htmlDiv"></div>
+        <br><br>
+
+        <span v-once> {{saldo}}</span>
+        <span> {{saldo}}</span>
+        <button @click="atualizaSaldo()">atualiza saldo</button>
+        <br><br>
+
+        <ul>
+            <li v-for="(curso,key) in cursos">
+                {{key}} - {{curso.nome}} - {{curso.cargaHoraria}}
+            </li>
+        </ul>
+        <br><br>
+
+        <ul>
+            <li v-for="({nome,cargaHoraria},key) in cursos">
+                {{key}} - {{nome}} - {{cargaHoraria}}
+            </li>
+        </ul>
+
+        <br><br>
+
+        <ul>
+            <li v-for="({nome,cargaHoraria,id},key) in cursos" :key="id">
+                {{id}} - {{nome}} - {{cargaHoraria}}
+                <hr>
+                <input type="text">
+            </li>
+        </ul>
+        <button @click="misturarLista">misturar lista</button>
+        <br><br>
+
+        <ul>
+            <li v-for="({nome,cargaHoraria,id},key) in cursos" :key="id">
+                {{id}} - {{nome}} - {{cargaHoraria}}
+                <hr>
+                <input type="text">
+            </li>
+        </ul>
+        <button @click="adicionar">adicionar</button>
+        <button @click="remover">remover</button>
+        <button @click="modificar">modificar</button>
+        <br><br>
+
+        <template v-for="n in 10"> <!--template nao gera elemento no html -->
+            <p>{{n}}</p>
+        </template>
+
+        <br><br>
+        {{paciente}}
+        <input type="text" v-model="paciente">
+
+        <br><br>
+        <input type="text" v-model="question">
+
+    </div>
+
+    <script>
+        
+        var app = new Vue({
+            el: '#app',
+            data: {
+                message: 'Hello Vue!',
+                site: 'https://www.terra.com.br',
+                input: 'verde',
+                texto: 'teste de texto vindo do parametro',
+                defaultText: 'texto default',
+                vez: 0,
+                imprimirSpan: true,
+                nota: 9,
+                mostraTextoSpanComVshow: true,
+                htmlDiv: '<h1>texto html</h1>',
+                saldo: 1000,
+                paciente: 'joao da silva',
+                cursos: [
+                    {id: 1, nome: 'curso 1', cargaHoraria: 20},
+                    {id: 2,nome: 'curso 2', cargaHoraria: 30},
+                    {id: 3,nome: 'curso 3', cargaHoraria: 40},
+                    {id: 4,nome: 'curso 4', cargaHoraria: 50},
+                    {id: 5,nome: 'curso 5', cargaHoraria: 60},
+                ],
+                question: ''
+            },
+            methods: {
+                reverseMessage: function () {
+                    this.message = this.message.split('').reverse().join('')
+                },
+                dividir() {
+                    return 10/2;
+                },
+                showMessage() {
+                    alert(this.message)
+                },
+                imprimirTexto(event) {
+                    console.log(event)
+                },
+                comportamentoDefault() {
+                    this.defaultText = 'texto alterado '+ (++this.vez) + ' vezes';
+                },
+                selectInput() {
+                    console.log(inputIdSelect.value)
+                },
+                atualizaSaldo() {
+                    this.saldo += 100;
+                },
+                misturarLista() {
+                    this.cursos.sort(function() {
+                        return Math.random() - 0.5;
+                    })
+                },
+                adicionar() {
+                    this.cursos.push({
+                        id: 6,
+                        nome: 'curso 6',
+                        cargaHoraria: 70
+                    })
+                },
+                remover() {
+                    this.cursos.pop()
+                },
+                modificar() {
+                    this.$set(this.cursos, 0, {
+                        id: 1,
+                        nome: 'curso 1 alterado',
+                        cargaHoraria: 20
+                    })
+                }
+            },
+            computed: {
+                // a computed getter
+                reversedMessage: function () {
+                    // `this` points to the vm instance
+                    return this.message.split('').reverse().join('')
+                }
+            },
+            watch: {
+                // whenever question changes, this function will run
+                question: function (newQuestion, oldQuestion) {
+                    console.log(newQuestion)
+                    console.log(oldQuestion)
+                }
+            }
+        })
+
+    </script>
+</body>
+</html>
